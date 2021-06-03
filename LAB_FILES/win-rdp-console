@@ -70,6 +70,9 @@ $message3 = "IE Enhanced Security Disabled"; $message3 | out-file c:/peaceinourt
 }
 
 #Function to pull the ssh key from the s3 bucket, this ssh key is the key used for ever EC2 instance and can be used for a depedency framework. *issues with DC use 4-17
+function Disable-ServerManager {
+    New-ItemProperty -Path HKCU:\Software\Microsoft\ServerManager -Name DoNotOpenServerManagerAtLogon -PropertyType DWORD -Value “0x1” –Force
+}
 
 function key_pull () {
     #must have cred_init ran prior to running this function in the same boot session!
@@ -195,9 +198,9 @@ create_dskticon ("%windir%\system32\cmd.exe","C:\Users\Public\Desktop\Command Pr
 choco install nmap -y --proxy="172.31.245.222:8888" --proxy-user="tstark" --proxy-password="pssecrocks"
 choco install wireshark -y --proxy="172.31.245.222:8888" --proxy-user="tstark" --proxy-password="pssecrocks"
 choco install php -y --proxy="172.31.245.222:8888" --proxy-user="tstark" --proxy-password="pssecrocks"
-choco install thunderbird --proxy="172.31.245.222:8888" --proxy-user="tstark" --proxy-password="pssecrocks"
-choco install filezilla --proxy="172.31.245.222:8888" --proxy-user="tstark" --proxy-password="pssecrocks"
-choco install putty --proxy="172.31.245.222:8888" --proxy-user="tstark" --proxy-password="pssecrocks"
+choco install thunderbird -y --proxy="172.31.245.222:8888" --proxy-user="tstark" --proxy-password="pssecrocks"
+choco install filezilla -y --proxy="172.31.245.222:8888" --proxy-user="tstark" --proxy-password="pssecrocks"
+choco install putty -y --proxy="172.31.245.222:8888" --proxy-user="tstark" --proxy-password="pssecrocks"
 ########################################################################################
 #Invoke web request pull packages for installation
 # Dependency - cred_init
@@ -207,8 +210,18 @@ choco install putty --proxy="172.31.245.222:8888" --proxy-user="tstark" --proxy-
 ########################################################################################
 # Install Windows feature
 # Example - Get-WindowsFeature -Name *RSAT* | Install-windowsfeature
-#
-#
+
+    #Enable Network Discovery
+    Get-NetFirewallRule -DisplayGroup 'Network Discovery'|Set-NetFirewallRule -Profile 'Private, Domain' -Enabled true -PassThru|select Name,DisplayName,Enabled,Profile|ft -a
+    New-NetFirewallRule -DisplayName "Allow Inbound From DC" -Direction Inbound -LocalPort 445 -Protocol TCP -Action Allow
+
+    # Enable File Sharing
+    Get-NetFirewallRule -DisplayGroup 'File and Printer Sharing'|Set-NetFirewallRule -Profile 'Private, Domain' -Enabled true -PassThru|select Name,DisplayName,Enabled,Profile|ft -a
+
+    # Set trustedhosts, Rename computer and reboot
+    set-item WSMan:\localhost\Client\TrustedHosts -Value * -Force -verbose
+    rename-computer -NewName client01 -verbose | out-file "c:\logging.txt" -append
+    restart-computer -force
 ########################################################################################
 #Remember if install requires a reboot us rcount_inc before the rboot action and continue custom actions in an elseif like commented below.
 }
