@@ -1,0 +1,13 @@
+For the duration of the challenge, you will be working on the Windows desktop system provided. You will log into WindowsClient01 when you open the lab environment. 
+You will be automatically logged in when you open the lab environment. No exercise files are provided for the course so you will follow the instructions from the video clips for each demo.
+The IP addressing scheme for the lab environment is 172.31.24.0/24 so the IP addresses used will be different than the video demo clips. Windowsclient01 will have an IP address of 172.31.24.10.
+Some demos are not supported in the lab environment, which may mean entire modules are omitted from this lab. This allows us to maintain a safe practice environment for you and your organization.
+The following demonstrations are not supported by our lab environment: Module name, Module name, and Module name.
+Video: Examine Wireshark https://app.pluralsight.com/course-player?clipId=17adaece-530e-4854-a90a-f42655de3cfb
+System Name: You will be logged into WindowsClient01 for this demo.
+Modifications: Wireshark is already installed for use in this lab.
+Commands: All commands are shown in the video clip with the changes below:
+During the website traffic capture with Wireshark, use www.wireshark.org as the target URL, not veronicasplantnursery.com.
+With the change in URL above, you may need to scroll through Wireshark more to find the different message types mentioned in the demo video.
+In the lab environment, Windowsclient01 will have an IP address of 172.31.24.10.
+
